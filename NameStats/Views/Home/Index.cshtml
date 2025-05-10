@@ -1,0 +1,539 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How many of me</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f5f9ff;
+            --dark-color: #334e68;
+            --success-color: #48bb78;
+            --danger-color: #e53e3e;
+            --gray-color: #718096;
+            --highlight-color: #ffd700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content Styles */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .search-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .search-section h2 {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 1.5rem 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-input {
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.3);
+        }
+
+        .search-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .search-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .loader {
+            display: none;
+            margin: 1rem auto;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .name-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .name-display h2 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .name-display h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            border-radius: 2px;
+        }
+
+        /* New Block-Based Layout */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Total People Highlighted Block */
+        .total-people-block {
+            grid-column: 1 / -1;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .total-people-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .total-people-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .total-people-body {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .total-people-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .total-people-label {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .stat-block {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-block-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .stat-block-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--gray-color);
+            text-align: center;
+        }
+
+        .stat-section {
+            margin-bottom: 2rem;
+        }
+
+        .stat-section-title {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            color: var(--danger-color);
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            background-color: #fff5f5;
+            border-radius: 8px;
+            border-left: 4px solid var(--danger-color);
+        }
+
+       
+        /* Responsive Styles */
+        @@media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>HOW MANY OF ME?</h1>
+        <p>Discover fascinating statistics about your name</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="search-section">
+            <h2>Enter a Name to Get Started</h2>
+            <p>Find out how common your name is and discover interesting statistics</p>
+            
+            <div class="search-form">
+                <input type="text" id="nameInput" class="search-input" placeholder="Type a name..." autocomplete="off">
+                <button id="searchBtn" class="search-button">Search</button>
+            </div>
+            
+            <div class="loader" id="loader"></div>
+            <div class="error-message" id="errorMessage"></div>
+        </section>
+
+        <section class="results-section" id="resultsSection">
+            <div class="name-display">
+                <h2 id="displayName">NAME</h2>
+            </div>
+
+            <!-- General Population Stats Section -->
+            <div class="stat-section">
+                <h3 class="stat-section-title">General Population Statistics</h3>
+                
+                <!-- Total People Highlighted Block -->
+                <div class="total-people-block">
+                    <div class="total-people-header">TOTAL PEOPLE</div>
+                    <div class="total-people-body">
+                        <div class="total-people-value" id="genPopulation">-</div>
+                        <div class="total-people-label">people with this name in the US</div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <!-- Rank Block (moved below Total People) -->
+                    <div class="stat-block">
+                        <div class="stat-block-header">Rank</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="genRank">-</div>
+                            <div class="stat-label">ranked among all names</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Percentile Rank Block -->
+@*                     <div class="stat-block">
+                        <div class="stat-block-header">Percentile Rank</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="genPercentile">-</div>
+                            <div class="stat-label">more common than this percentage</div>
+                        </div>
+                    </div> *@
+                    
+                    <!-- Proportion Block -->
+                    <div class="stat-block">
+                        <div class="stat-block-header">Proportion per 100k</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="genProportion">-</div>
+                            <div class="stat-label">people per 100,000 population</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SSA Baby Name Stats Section -->
+            <div class="stat-section">
+                <h3 class="stat-section-title">Social Security Administration Statistics</h3>
+                <div class="stats-grid">
+                    <!-- SSA Population Estimate Block -->
+                    <div class="stat-block">
+                        <div class="stat-block-header">Population Estimate</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="ssaPopulation">-</div>
+                            <div class="stat-label">SSA records with this name</div>
+                        </div>
+                    </div>
+                    
+                    <!-- SSA National Rank Block -->
+                    <div class="stat-block">
+                        <div class="stat-block-header">National Rank</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="ssaRank">-</div>
+                            <div class="stat-label">ranked among SSA records</div>
+                        </div>
+                    </div>
+                    
+                    <!-- SSA Percentile Rank Block -->
+                    <div class="stat-block">
+                        <div class="stat-block-header">Percentile Rank</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="ssaPercentile">-</div>
+                            <div class="stat-label">more common in SSA records</div>
+                        </div>
+                    </div>
+                    
+                    <!-- SSA Proportion Block -->
+                    <div class="stat-block">
+                        <div class="stat-block-header">Proportion per 100k</div>
+                        <div class="stat-block-body">
+                            <div class="stat-value" id="ssaProportion">-</div>
+                            <div class="stat-label">per 100,000 SSA records</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <script>
+        // DOM Elements
+        const nameInput = document.getElementById('nameInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const loader = document.getElementById('loader');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsSection = document.getElementById('resultsSection');
+        const displayName = document.getElementById('displayName');
+
+        // Stats Elements - General Population
+        const genPopulation = document.getElementById('genPopulation');
+        const genRank = document.getElementById('genRank');
+        //const genPercentile = document.getElementById('genPercentile');
+        const genProportion = document.getElementById('genProportion');
+
+        // Stats Elements - SSA Baby Names
+        const ssaPopulation = document.getElementById('ssaPopulation');
+        const ssaRank = document.getElementById('ssaRank');
+        const ssaPercentile = document.getElementById('ssaPercentile');
+        const ssaProportion = document.getElementById('ssaProportion');
+
+        // Search button click event
+        searchBtn.addEventListener('click', searchName);
+
+        // Enter key press event
+        nameInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchName();
+            }
+        });
+
+        function searchName() {
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                showError('Please enter a name to search');
+                return;
+            }
+
+            // Show loader, hide results and error
+            loader.style.display = 'block';
+            resultsSection.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            fetchNameStats(name);
+        }
+
+        function fetchNameStats(name) {
+            // Make the actual AJAX call to the API endpoint
+            fetch(`/get-data?name=${encodeURIComponent(name)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 503) {
+                            throw new Error('Unable to fetch data from name statistics service.');
+                        } else if (response.status === 400) {
+                            throw new Error('Please enter a valid name.');
+                        } else {
+                            throw new Error('Failed to fetch name statistics. Please try again.');
+                        }
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayResults(data);
+                })
+                .catch(error => {
+                    showError(error.message);
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    loader.style.display = 'none';
+                });
+        }
+
+        function displayResults(data) {
+            // Display the name
+            displayName.textContent = data.name;
+
+            // Display general population stats
+            const myStats = data.myNameStats;
+            genPopulation.textContent = myStats["Population Est."] || '-';
+            genRank.textContent = myStats["National Rank"] || '-';
+            //genPercentile.textContent = myStats["Percentile Rank"] || '-';
+            genProportion.textContent = myStats["Proportion/100k"] || '-';
+
+            // Display SSA baby name stats
+            const ssaData = data.ssaStats;
+            ssaPopulation.textContent = ssaData["Population Estimate"] || '-';
+            ssaRank.textContent = ssaData["National Rank"] || '-';
+            ssaPercentile.textContent = ssaData["Percentile Rank"] || '-';
+            ssaProportion.textContent = ssaData["Proportion/100k"] || '-';
+
+            // Show results section
+            resultsSection.style.display = 'block';
+
+            // Add animation for the total people block
+            const totalPeopleBlock = document.querySelector('.total-people-block');
+            totalPeopleBlock.style.opacity = '0';
+            totalPeopleBlock.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                totalPeopleBlock.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                totalPeopleBlock.style.opacity = '1';
+                totalPeopleBlock.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Add animation effect to the stat blocks
+            const statBlocks = document.querySelectorAll('.stat-block');
+            statBlocks.forEach((block, index) => {
+                block.style.opacity = '0';
+                block.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    block.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    block.style.opacity = '1';
+                    block.style.transform = 'translateY(0)';
+                }, 300 + (100 * index));
+            });
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            loader.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
